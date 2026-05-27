@@ -18,6 +18,44 @@ All numbers are positive, so expanding right never decreases the sum and moving 
 
 This matters because the optimized solution is not just faster by accident. It is faster because the pattern gives us a rule for safely ignoring work that cannot improve the answer.
 
+## Visual Explanation
+
+Example:
+
+```text
+target = 7
+nums = [2, 3, 1, 2, 4, 3]
+```
+
+We need the shortest contiguous window with sum at least `7`.
+
+Start expanding:
+
+```text
+[2]                 sum = 2, not enough
+[2, 3]              sum = 5, not enough
+[2, 3, 1]           sum = 6, not enough
+[2, 3, 1, 2]        sum = 8, valid
+```
+
+Once valid, shrink from the left:
+
+```text
+[2, 3, 1, 2]        sum = 8, length = 4
+remove 2
+[3, 1, 2]           sum = 6, invalid
+```
+
+Because all numbers are positive, removing from the left can only decrease the sum. So once it becomes invalid, we must expand right again.
+
+This is the sliding window rhythm:
+
+```text
+expand until valid
+shrink while valid
+repeat
+```
+
 ## Brute Force Thinking
 
 Try every start and grow every end until target is reached. This can still be O(n^2).
@@ -44,15 +82,29 @@ For this problem:
 
 ## Dry Run
 
-Use a small input for `Minimum Size Subarray Sum` and track every state variable from the algorithm. The goal is to explain why each update is legal, not just what the code does.
+Input:
 
-Suggested dry-run table:
+```text
+target = 7
+nums = [2, 3, 1, 2, 4, 3]
+```
 
-| Step | Current Input Position | Important State | Decision | Why |
-|---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
+| Step | right | Added | Window | Sum | Best | Decision |
+|---|---:|---:|---|---:|---:|---|
+| 1 | 0 | 2 | [2] | 2 | none | Expand. |
+| 2 | 1 | 3 | [2, 3] | 5 | none | Expand. |
+| 3 | 2 | 1 | [2, 3, 1] | 6 | none | Expand. |
+| 4 | 3 | 2 | [2, 3, 1, 2] | 8 | 4 | Valid, shrink left. |
+| 5 | 4 | 4 | [3, 1, 2, 4] | 10 | 4 | Valid, shrink left. |
+| 6 | 4 | already added | [1, 2, 4] | 7 | 3 | Still valid, shrink left. |
+| 7 | 5 | 3 | [2, 4, 3] | 9 | 3 | Valid, shrink left. |
+| 8 | 5 | already added | [4, 3] | 7 | 2 | Best becomes 2. |
+
+Final answer:
+
+```text
+2
+```
 
 ## Python Solution
 
@@ -76,6 +128,33 @@ class Solution:
 
         return 0 if best == len(nums) + 1 else best
 ```
+
+## Line-By-Line Explanation
+
+```text
+current += value
+```
+
+Expand the window by including `nums[right]`.
+
+```text
+while current >= target:
+```
+
+The current window is valid. Because we want the minimum length, we should try to shrink it.
+
+```text
+best = min(best, right - left + 1)
+```
+
+Record the valid window before removing anything.
+
+```text
+current -= nums[left]
+left += 1
+```
+
+Remove the leftmost value and test whether the smaller window is still valid.
 
 ## Complexity Analysis
 

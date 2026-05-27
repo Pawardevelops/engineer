@@ -18,6 +18,45 @@ Sorted order lets one comparison remove many pairs. A small sum means every pair
 
 This matters because the optimized solution is not just faster by accident. It is faster because the pattern gives us a rule for safely ignoring work that cannot improve the answer.
 
+## Visual Explanation
+
+Example:
+
+```text
+numbers = [2, 7, 11, 15]
+target = 9
+
+index:    0   1   2   3
+value:    2   7  11  15
+          L           R
+```
+
+Current sum:
+
+```text
+numbers[L] + numbers[R] = 2 + 15 = 17
+```
+
+The sum is too large. Because the array is sorted, moving `left` right would only increase the sum or keep it large.
+
+So the only useful move is:
+
+```text
+right -= 1
+```
+
+Now:
+
+```text
+index:    0   1   2   3
+value:    2   7  11  15
+          L   R
+
+sum = 2 + 7 = 9
+```
+
+Found the answer.
+
 ## Brute Force Thinking
 
 Check every pair until the target is found. It works but ignores the sorted order and takes O(n^2).
@@ -44,15 +83,18 @@ For this problem:
 
 ## Dry Run
 
-Use a small input for `Two Sum II - Input Array Is Sorted` and track every state variable from the algorithm. The goal is to explain why each update is legal, not just what the code does.
+Input:
 
-Suggested dry-run table:
+```text
+numbers = [2, 7, 11, 15]
+target = 9
+```
 
-| Step | Current Input Position | Important State | Decision | Why |
-|---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
+| Step | left | right | numbers[left] | numbers[right] | sum | Decision | Why |
+|---|---:|---:|---:|---:|---:|---|---|
+| 1 | 0 | 3 | 2 | 15 | 17 | right-- | Sum is too large. |
+| 2 | 0 | 2 | 2 | 11 | 13 | right-- | Sum is still too large. |
+| 3 | 0 | 1 | 2 | 7 | 9 | return [1, 2] | LeetCode wants 1-based indexes. |
 
 ## Python Solution
 
@@ -76,6 +118,34 @@ class Solution:
 
         return []
 ```
+
+## Line-By-Line Explanation
+
+```text
+left, right = 0, len(numbers) - 1
+```
+
+Start from the smallest and largest values.
+
+```text
+current = numbers[left] + numbers[right]
+```
+
+The sum tells us which side is wrong.
+
+```text
+if current < target:
+    left += 1
+```
+
+The sum is too small, so we need a bigger value. Since the array is sorted, moving `left` right is the safe move.
+
+```text
+else:
+    right -= 1
+```
+
+The sum is too large, so we need a smaller value. Moving `right` left is the safe move.
 
 ## Complexity Analysis
 

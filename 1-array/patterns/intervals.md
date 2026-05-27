@@ -4,6 +4,28 @@
 
 Treat each item as a range with a start and end. Sort ranges so overlaps and gaps become local decisions.
 
+## Visual Mental Model
+
+Intervals are not single values. They cover space.
+
+```text
+[1, 4]      covers 1----4
+[2, 6]      covers   2------6
+[8, 10]     covers          8--10
+
+[1, 4] and [2, 6] overlap because 2 <= 4.
+```
+
+After sorting by start:
+
+```text
+[1, 4], [2, 6], [8, 10]
+   current next
+
+If next.start <= current.end:
+merge them.
+```
+
 ## Why This Pattern Exists
 
 Intervals look like pairs of numbers, but the important relationship is geometric: ranges can overlap, touch, contain each other, or stay separate.
@@ -83,6 +105,19 @@ Copy before, merge overlaps with the new interval, then copy after.
 
 ### Minimum arrows
 One arrow at the smallest current end bursts all overlapping balloons.
+
+## Three Warm-Up Drills
+
+| No. | Drill | Why It Helps |
+|---|---|---|
+| 1 | [Summary Ranges](https://leetcode.com/problems/summary-ranges/) | Converts consecutive numbers into ranges. |
+| 2 | [Merge Intervals](https://leetcode.com/problems/merge-intervals/) | The core interval merge pattern. |
+| 3 | [Minimum Number of Arrows to Burst Balloons](https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/) | Greedy interval coverage. |
+
+## Study Links
+
+- [NeetCode Practice](https://neetcode.io/practice)
+- [LeetCode 75](https://leetcode.com/studyplan/leetcode-75/)
 
 ## How To Dry Run This Pattern
 

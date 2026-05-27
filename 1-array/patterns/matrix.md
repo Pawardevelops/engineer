@@ -4,6 +4,38 @@
 
 Treat a 2D array as rows, columns, boundaries, or a flattened 1D index depending on the structure.
 
+## Visual Mental Model
+
+A matrix is an array of arrays:
+
+```text
+matrix = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+]
+
+matrix[row][col]
+```
+
+Boundary traversal:
+
+```text
+top row    -> 1 2 3
+right col  -> 6 9
+bottom row -> 8 7
+left col   -> 4
+center     -> 5
+```
+
+Flattened index:
+
+```text
+index = row * cols + col
+row = index // cols
+col = index % cols
+```
+
 ## Why This Pattern Exists
 
 Matrix problems are still array problems, but the main difficulty is controlling movement and avoiding overwritten information.
@@ -87,6 +119,19 @@ First row and first column store which rows/columns must become zero.
 
 ### Rotate image
 Transpose then reverse each row to rotate clockwise.
+
+## Three Warm-Up Questions
+
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Reshape the Matrix](https://leetcode.com/problems/reshape-the-matrix/) | Practice row/column index conversion. |
+| 2 | [Transpose Matrix](https://leetcode.com/problems/transpose-matrix/) | Understand row/column swapping. |
+| 3 | [Matrix Diagonal Sum](https://leetcode.com/problems/matrix-diagonal-sum/) | Practice controlled matrix traversal. |
+
+## Study Links
+
+- [VisuAlgo](https://visualgo.net/)
+- [NeetCode Practice](https://neetcode.io/practice)
 
 ## How To Dry Run This Pattern
 

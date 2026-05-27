@@ -1,60 +1,160 @@
 # Prefix Sum
 
-## Core Idea
+Prefix sum means you keep the cumulative total from the beginning of the array up to each position.
 
-Store or track cumulative information so the sum of a range can be computed from two prefix values.
-
-## Why This Pattern Exists
-
-Subarray sum problems often ask the same question many times: what is the sum from i to j? Prefix sums turn that repeated work into arithmetic.
-
-The pattern is useful because it gives you a repeatable way to answer this question:
+It answers this question quickly:
 
 ```text
-What information do I keep so I do not repeat work?
+What is the sum of nums[left:right] without adding that range again?
 ```
 
-For array problems, the repeated work is usually one of these:
+## Visual Mental Model
 
-- Checking the same pair or range again
-- Recomputing a subarray property from the beginning
-- Searching for a value that could have been remembered
-- Revisiting cells, intervals, or candidates that can already be ruled out
+Array:
+
+```text
+index:    0   1   2   3
+nums:     3   4  -2   5
+```
+
+Prefix array:
+
+```text
+prefix[0] = 0
+prefix[1] = nums[0] = 3
+prefix[2] = nums[0] + nums[1] = 7
+prefix[3] = nums[0] + nums[1] + nums[2] = 5
+prefix[4] = nums[0] + nums[1] + nums[2] + nums[3] = 10
+
+prefix: [0, 3, 7, 5, 10]
+```
+
+Range sum:
+
+```text
+sum nums[1:4] = nums[1] + nums[2] + nums[3]
+              = 4 + -2 + 5
+              = 7
+
+Using prefix:
+prefix[4] - prefix[1] = 10 - 3 = 7
+```
+
+Why subtraction works:
+
+```text
+prefix[4] = nums[0] + nums[1] + nums[2] + nums[3]
+prefix[1] = nums[0]
+
+prefix[4] - prefix[1]
+= nums[1] + nums[2] + nums[3]
+```
+
+## The Important Mental Shift
+
+For medium problems, prefix sum is usually not just an array of sums.
+
+It becomes a way to remember previous states:
+
+```text
+current_prefix - old_prefix = target
+
+Rearrange:
+old_prefix = current_prefix - target
+```
+
+So while scanning, ask:
+
+```text
+Have I seen the prefix value I need before?
+```
+
+That is why prefix sum often combines with hashing.
+
+```mermaid
+flowchart TD
+    A["Scan current value"] --> B["Update current_prefix"]
+    B --> C["Need old_prefix = current_prefix - target"]
+    C --> D{"Have we seen old_prefix?"}
+    D -->|Yes| E["A valid subarray ends here"]
+    D -->|No| F["No matching subarray ending here"]
+    E --> G["Record current_prefix"]
+    F --> G
+```
 
 ## When To Use It
 
-- The problem asks about subarray sums, counts, balances, or remainders.
-- Negative numbers are allowed, making sliding window unreliable.
-- You need to know whether a previous cumulative state has appeared.
-- The condition can be written as current_prefix - previous_prefix = target.
+- The problem asks about subarray sums.
+- Negative numbers are present, so sliding window may fail.
+- You need to count subarrays with a target sum.
+- You need to find whether a repeated cumulative state exists.
+- You see divisibility or modulo conditions over subarray sums.
 
 ## When Not To Use It
 
-- The problem only needs one running sum over a positive window.
-- The operation is not reversible, such as maximum or mode over arbitrary ranges.
-- The answer depends on element order after sorting.
+- The array has only positive numbers and a simple sliding window is enough.
+- The operation is not reversible. Sum is reversible because `range = prefix_right - prefix_left`.
+- You need maximum/minimum over a range many times, where other structures may fit better.
+- The problem is not about a contiguous range.
 
-## Common Shapes
+## Three Easy Warm-Up Questions
 
-### Range sum
-Build an array where prefix[i] stores the sum before index i.
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Running Sum of 1d Array](https://leetcode.com/problems/running-sum-of-1d-array/) | Builds the basic cumulative sum idea. |
+| 2 | [Find Pivot Index](https://leetcode.com/problems/find-pivot-index/) | Uses left sum and right sum reasoning. |
+| 3 | [Range Sum Query - Immutable](https://leetcode.com/problems/range-sum-query-immutable/) | Shows why prefix arrays answer many range queries quickly. |
 
-### Prefix plus hashmap
-Store how often each prefix value has appeared to count subarrays ending at the current index.
+## Fully Worked Easy Example: Find Pivot Index
 
-### Prefix modulo
-Store first index of each remainder to reason about divisibility.
+Problem idea: find an index where the sum on the left equals the sum on the right.
 
-## Recognition Questions
+Input:
 
-Ask these before choosing the pattern:
+```text
+nums = [1, 7, 3, 6, 5, 6]
+total = 28
+```
 
-- Is the array sorted, or can I sort it without breaking the answer?
-- Is the answer about a contiguous subarray, a pair, a boundary, or a rank?
-- Can one local comparison safely remove many candidates?
-- What invariant must stay true after every pointer move, stack update, or scan step?
+At index `i`:
 
-## Python Template
+```text
+left_sum = sum before i
+right_sum = total - left_sum - nums[i]
+```
+
+Dry run:
+
+| i | nums[i] | left_sum before i | right_sum | Equal? |
+|---|---:|---:|---:|---|
+| 0 | 1 | 0 | 27 | No |
+| 1 | 7 | 1 | 20 | No |
+| 2 | 3 | 8 | 17 | No |
+| 3 | 6 | 11 | 11 | Yes |
+
+Python:
+
+```python
+from typing import List
+
+
+class Solution:
+    def pivotIndex(self, nums: List[int]) -> int:
+        total = sum(nums)
+        left_sum = 0
+
+        for i, value in enumerate(nums):
+            right_sum = total - left_sum - value
+            if left_sum == right_sum:
+                return i
+            left_sum += value
+
+        return -1
+```
+
+## Prefix Sum + Hashmap Template
+
+Use this for exact subarray sum counting.
 
 ```python
 from collections import defaultdict
@@ -64,6 +164,7 @@ from typing import List
 def count_subarrays_with_sum(nums: List[int], target: int) -> int:
     seen = defaultdict(int)
     seen[0] = 1
+
     prefix = 0
     count = 0
 
@@ -75,30 +176,43 @@ def count_subarrays_with_sum(nums: List[int], target: int) -> int:
     return count
 ```
 
-## Worked Mini Examples
+## Sliding Window vs Prefix Sum
 
-### Subarray sum equals k
-If current prefix is p, then any earlier prefix p-k creates a valid subarray.
+This is one of the most common confusions.
 
-### Continuous subarray sum
-Two prefixes with the same remainder differ by a multiple of k.
+Use sliding window when:
 
-### Contiguous binary array
-Treat 0 as -1 and 1 as +1; equal balance means equal zeros and ones.
+```text
+All numbers are positive, and expanding/shrinking changes the sum predictably.
+```
 
-## How To Dry Run This Pattern
+Use prefix sum when:
 
-1. Write the current state variables before the loop.
-2. Process one element or one pointer move at a time.
-3. After each move, ask whether the invariant is still true.
-4. Update the answer only at the correct time: after restoring validity for max-window problems, or before shrinking for min-window problems.
-5. Test edge cases: empty-like boundaries, one element, duplicates, all same values, and no-answer cases.
+```text
+Negative numbers exist, or you need exact counts of many subarrays.
+```
+
+Example:
+
+```text
+nums = [1, -1, 1], target = 1
+```
+
+Sliding window struggles because adding `-1` decreases the sum. Prefix sum still works because it does not depend on monotonic growth.
 
 ## Common Mistakes
 
-- Forgetting to seed prefix value 0 before scanning.
-- Using a set when counts are required.
-- Confusing prefix indexes with array indexes in length problems.
+- Forgetting `seen[0] = 1`.
+- Using a set when you need counts.
+- Updating the hashmap before checking `prefix - target`, which can count an empty subarray incorrectly in some variations.
+- Thinking prefix sum means only creating a prefix array. Many medium problems need prefix sum plus hashmap.
+
+## Study Links
+
+- [USACO Guide: Prefix Sums](https://usaco.guide/silver/prefix-sums)
+- [LeetCode 75](https://leetcode.com/studyplan/leetcode-75/)
+- [NeetCode Practice](https://neetcode.io/practice)
+- [Wikipedia: Prefix Sum](https://en.wikipedia.org/wiki/Prefix_sum)
 
 ## Questions Using This Pattern
 

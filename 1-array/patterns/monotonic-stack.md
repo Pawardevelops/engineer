@@ -4,6 +4,23 @@
 
 Maintain a stack whose values or indexes stay increasing or decreasing. Pop elements when the current value proves their answer.
 
+## Visual Mental Model
+
+The stack stores unresolved indexes.
+
+```text
+temperatures = [73, 74, 75, 71, 69, 72]
+
+stack holds days still waiting for a warmer day.
+
+Day 0: 73 -> stack [0]
+Day 1: 74 -> 74 is warmer than 73, so day 0 is solved.
+Day 2: 75 -> 75 is warmer than 74, so day 1 is solved.
+Day 3: 71 -> not warmer than 75, wait.
+```
+
+The current value can solve many previous values at once.
+
 ## Why This Pattern Exists
 
 Next greater or next smaller questions look backward many times. A monotonic stack keeps only unresolved candidates that still have a chance.
@@ -83,6 +100,19 @@ Scanning twice lets earlier elements see values after wraparound.
 
 ### Stock span style
 Popping smaller previous values gives a compact history.
+
+## Three Warm-Up Questions
+
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Next Greater Element I](https://leetcode.com/problems/next-greater-element-i/) | Basic next greater lookup. |
+| 2 | [Daily Temperatures](https://leetcode.com/problems/daily-temperatures/) | Next greater distance. |
+| 3 | [Next Greater Element II](https://leetcode.com/problems/next-greater-element-ii/) | Circular next greater. |
+
+## Study Links
+
+- [VisuAlgo](https://visualgo.net/)
+- [NeetCode Practice](https://neetcode.io/practice)
 
 ## How To Dry Run This Pattern
 

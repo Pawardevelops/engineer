@@ -18,6 +18,52 @@ The two outermost lines give maximum width first. Since area is limited by the s
 
 This matters because the optimized solution is not just faster by accident. It is faster because the pattern gives us a rule for safely ignoring work that cannot improve the answer.
 
+## Visual Explanation
+
+Example:
+
+```text
+height = [1, 8, 6, 2, 5, 4, 8, 3, 7]
+
+index:   0  1  2  3  4  5  6  7  8
+height:  1  8  6  2  5  4  8  3  7
+         L                       R
+```
+
+The area between `L` and `R` is:
+
+```text
+width = R - L
+height = min(height[L], height[R])
+area = width * height
+```
+
+At the start:
+
+```text
+L = 0, R = 8
+width = 8
+min height = min(1, 7) = 1
+area = 8
+```
+
+The left wall is shorter. That means the current area is limited by `height[L] = 1`.
+
+If we keep `L` and move `R` left:
+
+```text
+width gets smaller
+limiting height is still at most 1 unless a taller left wall is chosen
+```
+
+So keeping the shorter wall cannot help. The only move that can possibly improve the answer is:
+
+```text
+move L right
+```
+
+This is the whole reason two pointers works here.
+
 ## Brute Force Thinking
 
 Try every pair of lines and compute its area. That proves the answer definition clearly, but it checks O(n^2) pairs.
@@ -44,15 +90,28 @@ For this problem:
 
 ## Dry Run
 
-Use a small input for `Container With Most Water` and track every state variable from the algorithm. The goal is to explain why each update is legal, not just what the code does.
+Input:
 
-Suggested dry-run table:
+```text
+height = [1, 8, 6, 2, 5, 4, 8, 3, 7]
+```
 
-| Step | Current Input Position | Important State | Decision | Why |
-|---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
+| Step | left | right | width | min height | area | best | Move | Why |
+|---|---:|---:|---:|---:|---:|---:|---|---|
+| 1 | 0 | 8 | 8 | 1 | 8 | 8 | left++ | Left wall is shorter. |
+| 2 | 1 | 8 | 7 | 7 | 49 | 49 | right-- | Right wall is shorter. |
+| 3 | 1 | 7 | 6 | 3 | 18 | 49 | right-- | Right wall is shorter. |
+| 4 | 1 | 6 | 5 | 8 | 40 | 49 | right-- | Equal height, moving either is safe. |
+| 5 | 1 | 5 | 4 | 4 | 16 | 49 | right-- | Right wall is shorter. |
+| 6 | 1 | 4 | 3 | 5 | 15 | 49 | right-- | Right wall is shorter. |
+| 7 | 1 | 3 | 2 | 2 | 4 | 49 | right-- | Right wall is shorter. |
+| 8 | 1 | 2 | 1 | 6 | 6 | 49 | right-- | Right wall is shorter. |
+
+Final answer:
+
+```text
+49
+```
 
 ## Python Solution
 
@@ -76,6 +135,30 @@ class Solution:
 
         return best
 ```
+
+## Line-By-Line Explanation
+
+```text
+left, right = 0, len(height) - 1
+```
+
+Start with the widest possible container.
+
+```text
+width = right - left
+best = max(best, width * min(height[left], height[right]))
+```
+
+Calculate the current container and keep the largest area seen.
+
+```text
+if height[left] < height[right]:
+    left += 1
+else:
+    right -= 1
+```
+
+Move the shorter wall because the shorter wall limits the area. Moving the taller wall would only reduce width while keeping the same limiting wall.
 
 ## Complexity Analysis
 

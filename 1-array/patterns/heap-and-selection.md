@@ -4,6 +4,31 @@
 
 Find the top k, kth largest, or most frequent elements without fully sorting everything when full order is unnecessary.
 
+## Visual Mental Model
+
+If you only need k best values, do not always sort all n values.
+
+Min-heap of size k:
+
+```text
+Keep only the largest k values seen so far.
+
+nums = [5, 1, 9, 3, 8], k = 3
+
+heap after scan might contain [5, 8, 9]
+small values were discarded.
+```
+
+Bucket frequency:
+
+```text
+nums = [1, 1, 1, 2, 2, 3]
+
+frequency 3: [1]
+frequency 2: [2]
+frequency 1: [3]
+```
+
 ## Why This Pattern Exists
 
 Sorting gives complete order, but many questions only need a small part of that order. Heaps, buckets, and quickselect focus the work.
@@ -83,6 +108,19 @@ Quickselect finds the target rank without fully sorting.
 
 ### K closest elements
 Binary search plus slicing can beat heap when the array is sorted.
+
+## Three Warm-Up Questions
+
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Last Stone Weight](https://leetcode.com/problems/last-stone-weight/) | Basic heap behavior. |
+| 2 | [Kth Largest Element in a Stream](https://leetcode.com/problems/kth-largest-element-in-a-stream/) | Maintain top k over time. |
+| 3 | [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | Frequency plus selection. |
+
+## Study Links
+
+- [NeetCode Practice](https://neetcode.io/practice)
+- [VisuAlgo Heap Visualization](https://visualgo.net/en/heap)
 
 ## How To Dry Run This Pattern
 

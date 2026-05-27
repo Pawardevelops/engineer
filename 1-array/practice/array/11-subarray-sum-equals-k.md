@@ -18,6 +18,58 @@ If current prefix is p, then any previous prefix p - k forms a subarray ending h
 
 This matters because the optimized solution is not just faster by accident. It is faster because the pattern gives us a rule for safely ignoring work that cannot improve the answer.
 
+## Visual Explanation
+
+Example:
+
+```text
+nums = [1, 2, 3]
+k = 3
+```
+
+Prefix sums:
+
+```text
+before array: prefix = 0
+after 1:      prefix = 1
+after 2:      prefix = 3
+after 3:      prefix = 6
+```
+
+At each index, we ask:
+
+```text
+current_prefix - old_prefix = k
+```
+
+Rearrange:
+
+```text
+old_prefix = current_prefix - k
+```
+
+So if:
+
+```text
+current_prefix = 3
+k = 3
+old_prefix needed = 0
+```
+
+We have seen prefix `0` before the array started, so subarray `[1, 2]` is valid.
+
+Later:
+
+```text
+current_prefix = 6
+k = 3
+old_prefix needed = 3
+```
+
+We have seen prefix `3`, so subarray `[3]` is valid.
+
+That gives two subarrays.
+
 ## Brute Force Thinking
 
 Try every start and end, computing sums. Even with incremental sums this is O(n^2).
@@ -44,15 +96,32 @@ For this problem:
 
 ## Dry Run
 
-Use a small input for `Subarray Sum Equals K` and track every state variable from the algorithm. The goal is to explain why each update is legal, not just what the code does.
+Input:
 
-Suggested dry-run table:
+```text
+nums = [1, 2, 3]
+k = 3
+```
 
-| Step | Current Input Position | Important State | Decision | Why |
-|---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
+Start:
+
+```text
+seen = {0: 1}
+prefix = 0
+count = 0
+```
+
+| Step | value | prefix | needed prefix `prefix - k` | seen needed count | count | seen after |
+|---|---:|---:|---:|---:|---:|---|
+| 1 | 1 | 1 | -2 | 0 | 0 | {0: 1, 1: 1} |
+| 2 | 2 | 3 | 0 | 1 | 1 | {0: 1, 1: 1, 3: 1} |
+| 3 | 3 | 6 | 3 | 1 | 2 | {0: 1, 1: 1, 3: 1, 6: 1} |
+
+Final answer:
+
+```text
+2
+```
 
 ## Python Solution
 
@@ -75,6 +144,32 @@ class Solution:
 
         return count
 ```
+
+## Line-By-Line Explanation
+
+```text
+seen[0] = 1
+```
+
+This handles subarrays that start at index `0`.
+
+```text
+prefix += value
+```
+
+Now `prefix` is the sum from the beginning up to the current index.
+
+```text
+count += seen[prefix - k]
+```
+
+Every previous prefix equal to `prefix - k` creates a subarray ending here with sum `k`.
+
+```text
+seen[prefix] += 1
+```
+
+Record the current prefix so future indexes can use it.
 
 ## Complexity Analysis
 

@@ -6,6 +6,7 @@ Use this flow:
 
 ```text
 array.md
+  -> study_guide.md
   -> array_questions.md
   -> patterns/<pattern>.md
   -> practice/array/<question>.md
@@ -13,12 +14,13 @@ array.md
 
 ## How To Practice
 
-1. Pick one question from the table.
-2. Read the two-line explanation and identify the pattern.
-3. Open the linked pattern note and study the core idea.
-4. Open the practice file and solve the question in Python.
-5. Dry run your code before checking the provided solution.
-6. Revisit the same question after a few days and solve it without looking.
+1. Read the [Array Pattern Study Guide](study_guide.md).
+2. Pick one question from the table.
+3. Read the two-line explanation and identify the pattern.
+4. Open the linked pattern note and solve its easy warm-up drills.
+5. Open the practice file and solve the question in Python.
+6. Dry run your code before checking the provided solution.
+7. Revisit the same question after a few days and solve it without looking.
 
 ## Questions
 

@@ -4,6 +4,38 @@
 
 Modify the input array directly using swaps, reversals, write pointers, signs, or reserved marker positions.
 
+## Visual Mental Model
+
+In-place means the array itself becomes the workspace.
+
+Write pointer:
+
+```text
+nums = [0, 1, 0, 3, 12]
+
+read scans all values
+write marks where the next non-zero should go
+
+[0, 1, 0, 3, 12]
+ W  R
+```
+
+Index marking:
+
+```text
+value x marks index x - 1
+
+value 3 -> mark index 2
+value 1 -> mark index 0
+```
+
+Reversal:
+
+```text
+[1, 2, 3, 4, 5]
+ reverse all -> [5, 4, 3, 2, 1]
+```
+
 ## Why This Pattern Exists
 
 Interview array questions often add an O(1) extra-space requirement. In-place techniques use the array itself as working memory.
@@ -77,6 +109,19 @@ Negating nums[abs(x)-1] marks that x has appeared.
 
 ### Rotate array
 Reverse all, then reverse each rotated part.
+
+## Three Easy Warm-Up Questions
+
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Move Zeroes](https://leetcode.com/problems/move-zeroes/) | Write pointer compaction. |
+| 2 | [Remove Element](https://leetcode.com/problems/remove-element/) | Overwrite unwanted values. |
+| 3 | [Reverse String](https://leetcode.com/problems/reverse-string/) | Basic in-place swapping. |
+
+## Study Links
+
+- [NeetCode Practice](https://neetcode.io/practice)
+- [VisuAlgo](https://visualgo.net/)
 
 ## How To Dry Run This Pattern
 

@@ -4,6 +4,32 @@
 
 Use a set or dictionary to remember values, counts, first positions, or relationships that would otherwise require repeated scans.
 
+## Visual Mental Model
+
+Hashing adds memory to a left-to-right scan.
+
+```text
+nums = [4, 2, 7, 2, 9]
+
+scan value: 4     seen = {4}
+scan value: 2     seen = {4, 2}
+scan value: 7     seen = {4, 2, 7}
+scan value: 2     already seen -> duplicate found
+```
+
+For frequency questions:
+
+```text
+nums = [1, 1, 1, 2, 2, 3]
+
+counts:
+1 -> 3
+2 -> 2
+3 -> 1
+```
+
+The array gives order. The hashmap gives memory.
+
 ## Why This Pattern Exists
 
 Arrays are ordered, but many problems need fast lookup by value. Hashing adds O(1)-average lookup so each element can usually be processed once.
@@ -87,6 +113,20 @@ A frequency map converts raw values into counts.
 
 ### Prefix balance
 A map from balance to first index reveals the longest matching span.
+
+## Three Easy Warm-Up Questions
+
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | Basic set membership. |
+| 2 | [Two Sum](https://leetcode.com/problems/two-sum/) | Store complements or previous values. |
+| 3 | [Intersection of Two Arrays](https://leetcode.com/problems/intersection-of-two-arrays/) | Set operations on arrays. |
+ 
+## Study Links
+
+- [NeetCode Practice](https://neetcode.io/practice)
+- [LeetCode 75](https://leetcode.com/studyplan/leetcode-75/)
+- [VisuAlgo](https://visualgo.net/)
 
 ## How To Dry Run This Pattern
 

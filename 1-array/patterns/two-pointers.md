@@ -1,60 +1,155 @@
 # Two Pointers
 
-## Core Idea
+Two pointers means you use two indexes to look at two useful positions in an array. The power is not the two variables. The power is the rule that tells you which pointer can move safely.
 
-Use two indexes to represent two useful positions in the same array. The pointers usually move toward each other, move in the same direction, or divide the array into processed and unprocessed regions.
+## Visual Mental Model
 
-## Why This Pattern Exists
-
-Many brute force array solutions compare every pair. Two pointers keep only the pairs that can still matter and discard the rest using a sorted order, a boundary condition, or an invariant.
-
-The pattern is useful because it gives you a repeatable way to answer this question:
+Opposite direction:
 
 ```text
-What information do I keep so I do not repeat work?
+index:  0   1   2   3   4   5
+value:  1   3   4   6   8   10
+        L                   R
+
+Current pair = nums[L] + nums[R]
+
+If sum is too small:
+move L right because that is the only way to increase the sum.
+
+If sum is too large:
+move R left because that is the only way to decrease the sum.
 ```
 
-For array problems, the repeated work is usually one of these:
+Same direction:
 
-- Checking the same pair or range again
-- Recomputing a subarray property from the beginning
-- Searching for a value that could have been remembered
-- Revisiting cells, intervals, or candidates that can already be ruled out
+```text
+read scans every value
+write marks the next position in the valid prefix
+
+index:  0   1   2   3   4   5
+value:  0   0   1   1   2   2
+        W       R
+
+nums[0:W] is already valid.
+nums[R] is the current value being inspected.
+```
+
+Pointer decision flow:
+
+```mermaid
+flowchart TD
+    A["Look at nums[left] and nums[right]"] --> B{"What does current pair/window tell us?"}
+    B --> C["Too small"]
+    B --> D["Too large"]
+    B --> E["Valid answer"]
+    C --> F["Move left if sorted order says this can increase value"]
+    D --> G["Move right if sorted order says this can decrease value"]
+    E --> H["Record answer, then move one or both pointers carefully"]
+```
+
+## The Problem This Pattern Solves
+
+Brute force often checks every pair:
+
+```text
+for i in range(n):
+    for j in range(i + 1, n):
+        check nums[i], nums[j]
+```
+
+That is O(n^2). Two pointers avoids checking pairs that cannot possibly help.
+
+The pattern works only when you can say:
+
+```text
+After this comparison, all pairs on one side are useless.
+```
+
+If you cannot explain which candidates are eliminated, you are probably forcing the pattern.
 
 ## When To Use It
 
-- The problem asks about pairs, triplets, ranges, or boundaries.
-- The array is sorted, or sorting the array does not destroy the meaning of the answer.
-- A decision at one pointer tells you which side can be safely ignored.
-- You need an in-place overwrite pointer while scanning the array.
+- The question asks about pairs, triplets, boundaries, palindromes, or in-place compaction.
+- The array is sorted, or sorting does not break the answer.
+- One comparison gives a safe pointer move.
+- You can describe what the left pointer and right pointer mean in plain English.
 
 ## When Not To Use It
 
-- You need to remember arbitrary past values with no order relationship.
-- Removing an element could make an earlier removed candidate valid again.
-- The problem is really asking for all subsets or all permutations.
+- You need arbitrary previous values with no order relationship. Use hashing.
+- The chosen values do not have a boundary relationship.
+- Moving a pointer might skip a value that could become useful later.
+- The problem asks for all subsets, permutations, or combinations without a sorted pruning rule.
 
-## Common Shapes
+## Three Easy Warm-Up Questions
 
-### Opposite direction
-Start at both ends. Move the left pointer right or the right pointer left based on the current sum, area, or boundary.
+Do these before medium two-pointer questions.
 
-### Same direction
-Both pointers move forward. One pointer scans, the other marks the current write position or window start.
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Valid Palindrome](https://leetcode.com/problems/valid-palindrome/) | Teaches opposite-end movement with character comparison. |
+| 2 | [Move Zeroes](https://leetcode.com/problems/move-zeroes/) | Teaches read/write pointers for in-place compaction. |
+| 3 | [Squares of a Sorted Array](https://leetcode.com/problems/squares-of-a-sorted-array/) | Teaches opposite-end comparison when larger absolute values may be on either side. |
 
-### Partition pointers
-Maintain regions such as low, mid, and high when values must be rearranged in-place.
+## Fully Worked Easy Example: Valid Palindrome
 
-## Recognition Questions
+Goal: check whether a string reads the same from both sides after ignoring non-alphanumeric characters and case.
 
-Ask these before choosing the pattern:
+Input:
 
-- Is the array sorted, or can I sort it without breaking the answer?
-- Is the answer about a contiguous subarray, a pair, a boundary, or a rank?
-- Can one local comparison safely remove many candidates?
-- What invariant must stay true after every pointer move, stack update, or scan step?
+```text
+"A man, a plan, a canal: Panama"
+```
 
-## Python Template
+Mental model:
+
+```text
+A man, a plan, a canal: Panama
+L                              R
+```
+
+Dry run:
+
+| Step | left char | right char | Decision | Why |
+|---|---|---|---|---|
+| 1 | A | a | Match after lowercase | Move both pointers inward. |
+| 2 | space | m | Skip left | Spaces do not matter. |
+| 3 | m | m | Match | Move both pointers inward. |
+| 4 | a | a | Match | Move both pointers inward. |
+| 5 | n | n | Match | Continue until pointers cross. |
+
+Python:
+
+```python
+class Solution:
+    def isPalindrome(self, s: str) -> bool:
+        left, right = 0, len(s) - 1
+
+        while left < right:
+            while left < right and not s[left].isalnum():
+                left += 1
+            while left < right and not s[right].isalnum():
+                right -= 1
+
+            if s[left].lower() != s[right].lower():
+                return False
+
+            left += 1
+            right -= 1
+
+        return True
+```
+
+Why this is two pointers:
+
+- `left` represents the next meaningful character from the start.
+- `right` represents the next meaningful character from the end.
+- If the characters differ, no later move can fix that mismatch.
+- If they match, both positions are solved and can be discarded.
+
+## Python Templates
+
+Opposite direction:
 
 ```python
 from typing import List
@@ -76,30 +171,53 @@ def two_sum_sorted(nums: List[int], target: int) -> list[int]:
     return []
 ```
 
-## Worked Mini Examples
+Read/write compaction:
 
-### Sorted pair sum
-If current sum is too small, moving the left pointer is the only useful move because all values to its left are even smaller.
+```python
+from typing import List
 
-### Container area
-The shorter wall limits the area, so moving the taller wall cannot improve the limiting height.
 
-### Remove duplicates
-A read pointer sees every value, and a write pointer keeps the compacted valid prefix.
+def move_zeroes(nums: List[int]) -> None:
+    write = 0
 
-## How To Dry Run This Pattern
+    for read in range(len(nums)):
+        if nums[read] != 0:
+            nums[write], nums[read] = nums[read], nums[write]
+            write += 1
+```
 
-1. Write the current state variables before the loop.
-2. Process one element or one pointer move at a time.
-3. After each move, ask whether the invariant is still true.
-4. Update the answer only at the correct time: after restoring validity for max-window problems, or before shrinking for min-window problems.
-5. Test edge cases: empty-like boundaries, one element, duplicates, all same values, and no-answer cases.
+## How To Recognize It In Medium Problems
+
+Look for these signals:
+
+- "sorted array"
+- "pair" or "triplet"
+- "closest sum"
+- "in-place"
+- "remove duplicates"
+- "container", "palindrome", "partition"
+
+Then ask:
+
+```text
+What does moving left do?
+What does moving right do?
+Which move cannot lose the optimal answer?
+```
 
 ## Common Mistakes
 
-- Moving both pointers at once without proving both moves are safe.
-- Forgetting duplicate skipping after finding a valid combination.
-- Sorting when the original index order is required and not preserving indexes.
+- Moving both pointers without proving both positions are finished.
+- Sorting when the problem needs original indexes.
+- Forgetting to skip duplicates in 3Sum and 4Sum.
+- Calling every two-index problem "two pointers" even when no safe elimination rule exists.
+
+## Study Links
+
+- [USACO Guide: Two Pointers](https://usaco.guide/silver/two-pointers)
+- [GeeksforGeeks: Two Pointers Technique](https://www.geeksforgeeks.org/dsa/two-pointers-technique/)
+- [NeetCode Practice](https://neetcode.io/practice)
+- [Two Pointers in 7 minutes](https://www.youtube.com/watch?v=QzZ7nmouLTI)
 
 ## Questions Using This Pattern
 

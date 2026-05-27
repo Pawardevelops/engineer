@@ -4,6 +4,31 @@
 
 Repeatedly cut a sorted or partially ordered search space in half while preserving the side that can still contain the answer.
 
+## Visual Mental Model
+
+Binary search works when the search space has a direction.
+
+```text
+target = 9
+
+nums:  [1, 3, 5, 7, 9, 11, 13]
+        L        M              R
+
+nums[M] = 7
+7 < 9, so everything at M and left is too small.
+
+nums:  [1, 3, 5, 7, 9, 11, 13]
+                    L   M   R
+```
+
+Boundary version:
+
+```text
+false false false true true true
+                  ^
+            first true
+```
+
 ## Why This Pattern Exists
 
 When an array has order, checking the middle can eliminate many impossible positions at once.
@@ -83,6 +108,20 @@ Two lower-bound searches find the range edges.
 
 ### Find peak
 If the slope rises to the right, a peak exists on the right side.
+
+## Three Easy Warm-Up Questions
+
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Binary Search](https://leetcode.com/problems/binary-search/) | Basic exact search. |
+| 2 | [Search Insert Position](https://leetcode.com/problems/search-insert-position/) | First boundary-style search. |
+| 3 | [Guess Number Higher or Lower](https://leetcode.com/problems/guess-number-higher-or-lower/) | Binary search over a number range. |
+
+## Study Links
+
+- [GeeksforGeeks: Binary Search](https://www.geeksforgeeks.org/binary-search-identify-solve-and-interview-questions/)
+- [VisuAlgo Binary Search Tree Page](https://visualgo.net/en/bst)
+- [NeetCode Practice](https://neetcode.io/practice)
 
 ## How To Dry Run This Pattern
 

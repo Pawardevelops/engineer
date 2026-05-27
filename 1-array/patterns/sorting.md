@@ -4,6 +4,22 @@
 
 Sort the array to create order, group equal values, or make greedy and two-pointer decisions possible.
 
+## Visual Mental Model
+
+Sorting turns scattered information into neighbors.
+
+```text
+Before sorting:
+[4, 1, 7, 1, 3, 4]
+
+After sorting:
+[1, 1, 3, 4, 4, 7]
+ ^  ^     ^  ^
+ duplicates are adjacent
+```
+
+For interval-like or pair-sum problems, sorting changes the problem from "compare with everything" to "compare with nearby or boundary values."
+
 ## Why This Pattern Exists
 
 Sorting costs O(n log n), but it can remove a much larger O(n^2) or O(n^3) search by exposing structure.
@@ -89,6 +105,20 @@ Sorting by start means overlapping intervals appear next to each other.
 
 ### H-index
 Sorting citations makes it easy to test h papers with at least h citations.
+
+## Three Easy Warm-Up Questions
+
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Merge Sorted Array](https://leetcode.com/problems/merge-sorted-array/) | Practice ordered merging. |
+| 2 | [Squares of a Sorted Array](https://leetcode.com/problems/squares-of-a-sorted-array/) | Sorted input with a transformation. |
+| 3 | [Height Checker](https://leetcode.com/problems/height-checker/) | Compare original order against sorted order. |
+
+## Study Links
+
+- [VisuAlgo Sorting Visualizations](https://visualgo.net/en/sorting)
+- [NeetCode Practice](https://neetcode.io/practice)
+- [LeetCode 75](https://leetcode.com/studyplan/leetcode-75/)
 
 ## How To Dry Run This Pattern
 

@@ -1,77 +1,181 @@
 # Sliding Window
 
-## Core Idea
-
-Maintain a contiguous range of the array and update its state as the right boundary expands and the left boundary shrinks.
-
-## Why This Pattern Exists
-
-A brute force solution recomputes every subarray from scratch. Sliding window reuses almost all previous work because adjacent windows differ by only a few elements.
-
-The pattern is useful because it gives you a repeatable way to answer this question:
+Sliding window is a two-pointer pattern for contiguous subarrays or substrings. The two pointers are not just two random indexes. They are the left and right boundary of a current window.
 
 ```text
-What information do I keep so I do not repeat work?
+window = nums[left : right + 1]
 ```
 
-For array problems, the repeated work is usually one of these:
+## Visual Mental Model
 
-- Checking the same pair or range again
-- Recomputing a subarray property from the beginning
-- Searching for a value that could have been remembered
-- Revisiting cells, intervals, or candidates that can already be ruled out
+Fixed-size window:
+
+```text
+nums = [2, 1, 5, 1, 3, 2], k = 3
+
+Window 1: [2, 1, 5]           sum = 8
+Window 2:    [1, 5, 1]        sum = 7
+Window 3:       [5, 1, 3]     sum = 9
+Window 4:          [1, 3, 2]  sum = 6
+
+Best fixed-size sum = 9
+```
+
+Variable-size window:
+
+```text
+nums = [2, 3, 1, 2, 4, 3], target = 7
+
+left
+ |
+[2, 3, 1, 2, 4, 3]
+          |
+        right
+
+current window = [2, 3, 1, 2]
+sum = 8, valid because sum >= 7
+
+Now shrink from left to see if a shorter valid window exists.
+```
+
+Window lifecycle:
+
+```mermaid
+flowchart TD
+    A["Expand right"] --> B["Add nums[right] to window state"]
+    B --> C{"Is window valid?"}
+    C -->|No| A
+    C -->|Yes| D["Update answer if this is a candidate"]
+    D --> E["Shrink left while allowed"]
+    E --> C
+```
+
+## The Problem This Pattern Solves
+
+Brute force repeats subarray work:
+
+```text
+start at every index
+    build every subarray from that start
+        recompute sum/count/frequency
+```
+
+Sliding window avoids recomputing because moving from one window to the next changes only two things:
+
+```text
+one element enters from the right
+zero or more elements leave from the left
+```
 
 ## When To Use It
 
-- The problem asks for a longest, shortest, or counted contiguous subarray.
-- All numbers are non-negative, or the window condition is monotonic as the window expands.
-- You can update the answer by adding one right element and removing left elements.
-- The constraint says subarray, substring, or consecutive segment.
+- The problem asks for a contiguous subarray or substring.
+- The answer is a longest, shortest, maximum, minimum, or count over a contiguous range.
+- Adding the right element and removing the left element lets you update the state cheaply.
+- The validity rule is monotonic: once invalid, moving left can restore validity.
 
 ## When Not To Use It
 
-- Negative numbers break the monotonic relationship between window size and sum.
-- The chosen elements do not need to be contiguous.
-- The best decision depends on many past states, which usually points to dynamic programming.
+- Negative numbers break a sum-based monotonic rule.
+- The selected elements do not need to be next to each other.
+- You need to count arbitrary previous prefix states. Use prefix sum + hashmap.
+- You cannot define what makes the current window valid.
 
-## Common Shapes
+Important distinction:
 
-### Fixed size
-The window length is fixed. Add the new right element and remove the element that falls out.
+```text
+Positive numbers + target sum at least K:
+sliding window can work.
 
-### Variable size max
-Expand right, then shrink left while the window is invalid. Record the largest valid window.
+Mixed positive and negative numbers + exact sum K:
+use prefix sum + hashmap.
+```
 
-### Variable size min
-Expand right until valid, then shrink left while staying valid. Record the smallest valid window.
+## Three Easy Warm-Up Questions
 
-## Recognition Questions
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Maximum Average Subarray I](https://leetcode.com/problems/maximum-average-subarray-i/) | Fixed-size window with running sum. |
+| 2 | [Contains Duplicate II](https://leetcode.com/problems/contains-duplicate-ii/) | Window of at most k distance with a set. |
+| 3 | [Longest Nice Substring](https://leetcode.com/problems/longest-nice-substring/) | Helps think about substring constraints, even though it is often solved differently. |
 
-Ask these before choosing the pattern:
+If question 3 feels too string-specific, use [Find All Anagrams in a String](https://leetcode.com/problems/find-all-anagrams-in-a-string/) as the stronger frequency-window drill.
 
-- Is the array sorted, or can I sort it without breaking the answer?
-- Is the answer about a contiguous subarray, a pair, a boundary, or a rank?
-- Can one local comparison safely remove many candidates?
-- What invariant must stay true after every pointer move, stack update, or scan step?
+## Fully Worked Easy Example: Maximum Average Subarray I
 
-## Python Template
+Problem idea: given `nums` and `k`, find the maximum average of any subarray of length `k`.
+
+Input:
+
+```text
+nums = [1, 12, -5, -6, 50, 3]
+k = 4
+```
+
+Instead of recomputing every length-4 sum:
+
+```text
+Window 1: [1, 12, -5, -6]      sum = 2
+Window 2:    [12, -5, -6, 50]  sum = 51
+Window 3:        [-5, -6, 50, 3] sum = 42
+```
+
+To move from Window 1 to Window 2:
+
+```text
+old sum = 1 + 12 + -5 + -6 = 2
+remove nums[0] = 1
+add nums[4] = 50
+new sum = 2 - 1 + 50 = 51
+```
+
+Dry run:
+
+| Step | Window | Sum | Best Sum | Why |
+|---|---|---:|---:|---|
+| 1 | [1, 12, -5, -6] | 2 | 2 | First full window. |
+| 2 | [12, -5, -6, 50] | 51 | 51 | Remove 1, add 50. |
+| 3 | [-5, -6, 50, 3] | 42 | 51 | Remove 12, add 3. |
+
+Python:
 
 ```python
 from typing import List
 
 
-def longest_window_at_most_k_bad(nums: List[int], k: int) -> int:
+class Solution:
+    def findMaxAverage(self, nums: List[int], k: int) -> float:
+        current = sum(nums[:k])
+        best = current
+
+        for right in range(k, len(nums)):
+            current += nums[right]
+            current -= nums[right - k]
+            best = max(best, current)
+
+        return best / k
+```
+
+## Variable Window Template
+
+Use this when the window size is not fixed.
+
+```python
+from typing import List
+
+
+def longest_window_with_at_most_k_zeros(nums: List[int], k: int) -> int:
     left = 0
-    bad = 0
+    zeros = 0
     best = 0
 
     for right, value in enumerate(nums):
         if value == 0:
-            bad += 1
+            zeros += 1
 
-        while bad > k:
+        while zeros > k:
             if nums[left] == 0:
-                bad -= 1
+                zeros -= 1
             left += 1
 
         best = max(best, right - left + 1)
@@ -79,30 +183,42 @@ def longest_window_at_most_k_bad(nums: List[int], k: int) -> int:
     return best
 ```
 
-## Worked Mini Examples
+## How To Recognize It In Medium Problems
 
-### Minimum size subarray sum
-With positive numbers, once the sum is large enough, shrinking may reveal a shorter valid window.
+Look for:
 
-### At most K zeros
-The window is valid while the number of zeros is at most K.
+- "subarray"
+- "substring"
+- "consecutive"
+- "at most k"
+- "at least target"
+- "longest"
+- "minimum length"
+- "window"
 
-### Product less than K
-With positive numbers, product grows when expanding and shrinks when moving left.
+Then write:
 
-## How To Dry Run This Pattern
-
-1. Write the current state variables before the loop.
-2. Process one element or one pointer move at a time.
-3. After each move, ask whether the invariant is still true.
-4. Update the answer only at the correct time: after restoring validity for max-window problems, or before shrinking for min-window problems.
-5. Test edge cases: empty-like boundaries, one element, duplicates, all same values, and no-answer cases.
+```text
+Window state:
+Validity condition:
+When to expand:
+When to shrink:
+When to update answer:
+```
 
 ## Common Mistakes
 
-- Using sliding window on arrays with negative numbers when prefix sums are needed.
-- Updating the answer before restoring the invariant.
+- Using sliding window when negative numbers make the sum unpredictable.
+- Updating the answer before the window is valid.
 - Shrinking only once when the window may still be invalid.
+- Forgetting that every valid window ending at `right` may contribute many subarrays in counting problems.
+
+## Study Links
+
+- [NeetCode Practice](https://neetcode.io/practice)
+- [LeetCode 75](https://leetcode.com/studyplan/leetcode-75/)
+- [USACO Guide: Two Pointers](https://usaco.guide/silver/two-pointers)
+- [GeeksforGeeks: Short Notes on Two Pointer and Sliding Window](https://www.geeksforgeeks.org/dsa/short-notes-on-two-pointer-and-sliding-window-1/)
 
 ## Questions Using This Pattern
 

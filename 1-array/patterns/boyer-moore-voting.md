@@ -4,6 +4,22 @@
 
 Cancel different values against each other to identify possible majority candidates using constant space.
 
+## Visual Mental Model
+
+Think of different values canceling each other out.
+
+```text
+nums = [2, 2, 1, 1, 1, 2, 2]
+
+candidate = 2, count = 1
+see 2 -> count = 2
+see 1 -> count = 1
+see 1 -> count = 0
+candidate can change
+```
+
+If a value appears more than half the time, it survives all cancellations.
+
 ## Why This Pattern Exists
 
 If a value appears more than n/2 or n/3 times, it cannot be completely canceled by all other values.
@@ -82,6 +98,19 @@ At most two numbers can appear more than n/3 times.
 
 ### Streaming candidate
 The algorithm keeps only candidates and counters while scanning once.
+
+## Three Warm-Up Questions
+
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Majority Element](https://leetcode.com/problems/majority-element/) | One-candidate Boyer-Moore. |
+| 2 | [Majority Element II](https://leetcode.com/problems/majority-element-ii/) | Two-candidate Boyer-Moore. |
+| 3 | [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) | Compare hashmap frequency thinking before constant-space voting. |
+
+## Study Links
+
+- [NeetCode Practice](https://neetcode.io/practice)
+- [LeetCode 75](https://leetcode.com/studyplan/leetcode-75/)
 
 ## How To Dry Run This Pattern
 

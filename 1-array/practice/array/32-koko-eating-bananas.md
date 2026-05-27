@@ -18,6 +18,38 @@ If speed s is enough, every speed greater than s is also enough. That monotonic 
 
 This matters because the optimized solution is not just faster by accident. It is faster because the pattern gives us a rule for safely ignoring work that cannot improve the answer.
 
+## Visual Explanation
+
+Example:
+
+```text
+piles = [3, 6, 7, 11]
+h = 8
+```
+
+Possible eating speeds:
+
+```text
+speed:  1   2   3   4   5   6   7   8   9   10   11
+works:  F   F   F   T   T   T   T   T   T    T    T
+                    ^
+              minimum speed
+```
+
+This true/false shape is why binary search works.
+
+For speed `4`:
+
+```text
+pile 3  -> ceil(3 / 4)  = 1 hour
+pile 6  -> ceil(6 / 4)  = 2 hours
+pile 7  -> ceil(7 / 4)  = 2 hours
+pile 11 -> ceil(11 / 4) = 3 hours
+total = 8 hours
+```
+
+Speed `4` works, so we try smaller speeds.
+
 ## Brute Force Thinking
 
 Try every speed from 1 to max pile and simulate hours. That can be too slow.
@@ -44,15 +76,21 @@ For this problem:
 
 ## Dry Run
 
-Use a small input for `Koko Eating Bananas` and track every state variable from the algorithm. The goal is to explain why each update is legal, not just what the code does.
+Input:
 
-Suggested dry-run table:
+```text
+piles = [3, 6, 7, 11]
+h = 8
+```
 
-| Step | Current Input Position | Important State | Decision | Why |
-|---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
+| Step | left | right | mid speed | hours needed | Works? | Decision |
+|---|---:|---:|---:|---:|---|---|
+| 1 | 1 | 11 | 6 | 6 | Yes | Try smaller, right = 6. |
+| 2 | 1 | 6 | 3 | 10 | No | Need faster, left = 4. |
+| 3 | 4 | 6 | 5 | 8 | Yes | Try smaller, right = 5. |
+| 4 | 4 | 5 | 4 | 8 | Yes | Try smaller, right = 4. |
+
+Now `left == right == 4`, so answer is `4`.
 
 ## Python Solution
 
@@ -79,6 +117,34 @@ class Solution:
 
         return left
 ```
+
+## Line-By-Line Explanation
+
+```text
+left, right = 1, max(piles)
+```
+
+The slowest possible speed is 1. The fastest speed we need to consider is the largest pile.
+
+```text
+hours += (pile + speed - 1) // speed
+```
+
+This is integer ceiling division. It calculates how many full hours are needed for one pile.
+
+```text
+if can_finish(mid):
+    right = mid
+```
+
+If speed `mid` works, it might be the answer, so keep it and search smaller speeds.
+
+```text
+else:
+    left = mid + 1
+```
+
+If speed `mid` does not work, every slower speed also fails.
 
 ## Complexity Analysis
 

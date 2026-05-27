@@ -4,6 +4,25 @@
 
 Binary search the value of the answer, not an array index. A helper function checks whether a candidate answer is feasible.
 
+## Visual Mental Model
+
+You are not searching inside the input array. You are searching the answer range.
+
+```text
+Possible speeds:
+
+1   2   3   4   5   6   7   8
+F   F   F   T   T   T   T   T
+            ^
+      minimum speed that works
+```
+
+The helper function answers one question:
+
+```text
+If the answer were mid, would the task be possible?
+```
+
 ## Why This Pattern Exists
 
 Some problems ask for the minimum speed, capacity, distance, or value that satisfies a condition. If feasibility changes monotonically, binary search can find the boundary.
@@ -81,6 +100,20 @@ If capacity c works, any larger capacity also works.
 
 ### Magnetic force
 If distance d can be achieved, smaller distances can also be achieved.
+
+## Three Easy Warm-Up Questions
+
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Sqrt(x)](https://leetcode.com/problems/sqrtx/) | Search the largest value whose square is small enough. |
+| 2 | [Arranging Coins](https://leetcode.com/problems/arranging-coins/) | Search the maximum complete staircase height. |
+| 3 | [First Bad Version](https://leetcode.com/problems/first-bad-version/) | Search the first true boundary. |
+
+## Study Links
+
+- [GeeksforGeeks: Binary Search](https://www.geeksforgeeks.org/binary-search-identify-solve-and-interview-questions/)
+- [NeetCode Practice](https://neetcode.io/practice)
+- [LeetCode 75](https://leetcode.com/studyplan/leetcode-75/)
 
 ## How To Dry Run This Pattern
 

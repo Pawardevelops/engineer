@@ -4,6 +4,29 @@
 
 Make the locally best decision that can be proven not to hurt the future answer.
 
+## Visual Mental Model
+
+Greedy is about keeping the strongest useful state so far.
+
+Jump Game:
+
+```text
+nums = [2, 3, 1, 1, 4]
+
+index 0 reaches up to 2
+index 1 reaches up to 4
+
+farthest = 4, so the end is reachable.
+```
+
+Gas Station:
+
+```text
+If tank becomes negative at station i,
+then no station in the failed segment can be the start.
+Restart at i + 1.
+```
+
 ## Why This Pattern Exists
 
 Some array problems are really about maintaining the strongest possible state while scanning once.
@@ -81,6 +104,19 @@ When you finish the current layer, you must spend one jump.
 
 ### Gas station
 A negative tank means no station in the failed segment can be the answer.
+
+## Three Warm-Up Questions
+
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) | Keep the best state seen so far. |
+| 2 | [Can Place Flowers](https://leetcode.com/problems/can-place-flowers/) | Local placement decisions. |
+| 3 | [Lemonade Change](https://leetcode.com/problems/lemonade-change/) | Greedy resource management. |
+
+## Study Links
+
+- [NeetCode Practice](https://neetcode.io/practice)
+- [LeetCode 75](https://leetcode.com/studyplan/leetcode-75/)
 
 ## How To Dry Run This Pattern
 

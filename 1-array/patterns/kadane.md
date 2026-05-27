@@ -4,6 +4,30 @@
 
 Track the best subarray ending at the current index and the best answer seen globally.
 
+## Visual Mental Model
+
+At every index, Kadane asks:
+
+```text
+Should I extend the previous subarray,
+or should I start fresh here?
+```
+
+Example:
+
+```text
+nums = [-2, 1, -3, 4, -1, 2, 1]
+
+At value 4:
+previous current sum is bad, so start fresh at 4.
+
+At value -1:
+4 + -1 = 3 is still useful, so continue.
+
+At value 2:
+3 + 2 = 5 is better, continue.
+```
+
 ## Why This Pattern Exists
 
 For contiguous maximum problems, a bad prefix should be dropped because it can only make any future subarray worse.
@@ -81,6 +105,19 @@ The smallest negative product may become the largest after multiplying by a nega
 
 ### Circular subarray
 The wrapped answer is everything except the weakest middle segment.
+
+## Three Warm-Up Questions
+
+| No. | Question | Why It Helps |
+|---|---|---|
+| 1 | [Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) | Same idea of keeping the best local state. |
+| 2 | [Maximum Subarray](https://leetcode.com/problems/maximum-subarray/) | The core Kadane problem. |
+| 3 | [Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/) | Kadane with both min and max state. |
+
+## Study Links
+
+- [NeetCode Practice](https://neetcode.io/practice)
+- [LeetCode 75](https://leetcode.com/studyplan/leetcode-75/)
 
 ## How To Dry Run This Pattern
 
